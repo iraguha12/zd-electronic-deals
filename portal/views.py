@@ -373,3 +373,79 @@ def portal_audit_logs_view(request):
     """
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')[:100]
     return render(request, 'portal/audit_logs.html', {'logs': logs})
+
+
+# --- OWNER ACCOUNT SETUP & INITIALIZATION ---
+
+def portal_owner_setup_view(request):
+    """
+    Initial Owner Account Setup:
+    Allows the real business owner to configure their personal email & password.
+    Secured so that once an active Owner exists, it requires the secret key 'zd2026'
+    or already being logged in as superuser.
+    """
+    has_owner = CustomUser.objects.filter(is_superuser=True, is_active=True).exists()
+    provided_secret = request.GET.get('secret') or request.POST.get('secret')
+    
+    # If an owner already exists and no valid secret key is provided, redirect to login
+    if has_owner and provided_secret != 'zd2026' and not (request.user.is_authenticated and request.user.is_superuser):
+        messages.info(request, "Owner account is already configured. Please log in with your email and password.")
+        return redirect('accounts:login')
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        first_name = request.POST.get('first_name', '').strip() or 'Store'
+        last_name = request.POST.get('last_name', '').strip() or 'Owner'
+        phone_number = request.POST.get('phone_number', '').strip()
+
+        if not email or '@' not in email:
+            messages.error(request, "Please enter a valid email address.")
+            return render(request, 'portal/owner_setup.html', {'secret': provided_secret})
+
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, 'portal/owner_setup.html', {
+                'email': email, 'first_name': first_name, 'last_name': last_name, 
+                'phone_number': phone_number, 'secret': provided_secret
+            })
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match. Please verify both password fields.")
+            return render(request, 'portal/owner_setup.html', {
+                'email': email, 'first_name': first_name, 'last_name': last_name, 
+                'phone_number': phone_number, 'secret': provided_secret
+            })
+
+        # Find or create user
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            user.role = CustomUser.ROLE_OWNER
+            user.is_staff = True
+            user.is_superuser = True
+            user.is_email_verified = True
+            user.is_active = True
+            user.first_name = first_name
+            user.last_name = last_name
+            if phone_number:
+                user.phone_number = phone_number
+            user.set_password(password)
+            user.save()
+        else:
+            user = CustomUser.objects.create_superuser(
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone_number
+            )
+
+        from django.contrib.auth import login
+        login(request, user)
+        log_activity(user, "OWNER_ACCOUNT_SETUP", f"Owner account configured for {email}", request.META.get('REMOTE_ADDR', ''))
+        messages.success(request, f"Welcome to Z&D ELECTRONIC DEALS, {user.first_name}! Your Owner account is active and you are now logged in.")
+        return redirect('portal:dashboard')
+
+    return render(request, 'portal/owner_setup.html', {'secret': provided_secret})
+

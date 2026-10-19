@@ -30,6 +30,7 @@ urlpatterns = [
     path('inquiries/<uuid:inquiry_id>/toggle/', views.portal_inquiry_toggle_view, name='inquiry_toggle'),
 
     # Owner-Only Business Features
+    path('setup/', views.portal_owner_setup_view, name='owner_setup'),
     path('settings/', views.portal_site_settings_view, name='site_settings'),
     path('staff/', views.portal_staff_list_view, name='staff_list'),
     path('staff/<uuid:user_id>/edit/', views.portal_user_role_edit_view, name='user_role_edit'),

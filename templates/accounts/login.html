@@ -41,11 +41,17 @@
             </button>
         </form>
 
-        <div class="pt-6 mt-6 border-t border-slate-100 text-center">
+        <div class="pt-6 mt-6 border-t border-slate-100 text-center space-y-2">
             <p class="text-xs text-slate-500">
                 Don't have an account yet? 
                 <a href="{% url 'accounts:register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="font-bold text-zdroyal-600 hover:underline">
                     Create Account
+                </a>
+            </p>
+            <p class="text-[11px] text-slate-400">
+                Store Owner? 
+                <a href="{% url 'portal:owner_setup' %}?secret=zd2026" class="font-bold text-zdnavy-800 hover:text-zdroyal-600 hover:underline">
+                    Set up or Claim Owner Account
                 </a>
             </p>
         </div>
