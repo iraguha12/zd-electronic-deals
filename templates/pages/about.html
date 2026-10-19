@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-zdgold-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            About Z&D Electronic Deals
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight mt-3 mb-4">
+            Connecting Rwanda Directly to China's Electronics Capital
+        </h1>
+        <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            "BEFORE YOU BUY ELECTRONICS, ASK Z&D." We eliminate inflated intermediary markups through direct manufacturer procurement in Shenzhen and Guangzhou.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-12">
+    
+    <!-- Story & Mission -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-6">
+        <h2 class="text-xl sm:text-2xl font-black text-zdnavy-900 tracking-tight">Our Mission & Company Story</h2>
+        <div class="prose prose-sm text-slate-600 leading-relaxed space-y-4 text-xs sm:text-sm">
+            <p>{{ site_settings.about_company|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- 3 Core Pillars -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-zdroyal-600 flex items-center justify-center font-bold">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-sm text-zdnavy-900">Tested Hardware</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                We physically test every device for charging, display responsiveness, and IMEI validity in China before shipment.
+            </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <i data-lucide="badge-dollar-sign" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-sm text-zdnavy-900">Transparent Landed Cost</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Priced transparently in Rwandan Francs (RWF) with no hidden customs surprises upon arrival.
+            </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                <i data-lucide="headphones" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-sm text-zdnavy-900">Direct WhatsApp Assistance</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Need advice on specs before buying? Message us directly. "BEFORE YOU BUY ELECTRONICS, ASK Z&D."
+            </p>
+        </div>
+    </div>
+
+    <!-- Contact & Sourcing Hubs -->
+    <div class="p-8 rounded-3xl bg-slate-900 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+            <h3 class="text-lg font-black mb-1">Have questions or looking for a specific model?</h3>
+            <p class="text-xs text-slate-300">Our customer support and sourcing specialists are ready to help you.</p>
+        </div>
+        <a href="https://wa.me/{{ site_settings.whatsapp_number }}" target="_blank" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition flex-shrink-0">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <span>Chat on WhatsApp</span>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

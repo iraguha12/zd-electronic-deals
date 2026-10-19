@@ -1,0 +1,117 @@
+{% extends 'portal/base_portal.html' %}
+{% load humanize %}
+
+{% block title %}{{ product.name }} | Image & Gallery Management{% endblock %}
+
+{% block portal_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <div>
+        <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+            <a href="{% url 'portal:dashboard' %}" class="hover:text-zdroyal-600">Portal</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <a href="{% url 'portal:products_list' %}" class="hover:text-zdroyal-600">Products</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <span class="text-slate-900 font-bold truncate max-w-xs">{{ product.name }}</span>
+        </nav>
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">{{ product.name }}</h1>
+            <a href="{% url 'portal:product_edit' product.id %}" class="px-4 py-2 rounded-xl bg-zdnavy-900 text-white font-bold text-xs hover:bg-zdroyal-600 transition">
+                Edit Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Product Summary Card -->
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between text-xs">
+        <div>
+            <span class="text-slate-400 block">SKU / Model</span>
+            <span class="font-bold font-mono text-slate-800">{{ product.sku }}</span>
+        </div>
+        <div>
+            <span class="text-slate-400 block">Selling Price</span>
+            <span class="font-extrabold text-zdnavy-900">{{ product.selling_price|floatformat:0|intcomma }} RWF</span>
+        </div>
+        <div>
+            <span class="text-slate-400 block">Current Stock</span>
+            <span class="font-bold text-emerald-700">{{ product.stock_quantity }} units</span>
+        </div>
+        <div>
+            <span class="text-slate-400 block">Sourcing</span>
+            <span class="font-bold">{% if product.in_stock_in_rwanda %}Kigali Stock{% else %}China Order{% endif %}</span>
+        </div>
+    </div>
+
+    <!-- Upload Image Form -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+            <i data-lucide="image-plus" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>Add Product Photo</span>
+        </h2>
+
+        <form action="{% url 'portal:product_image_add' product.id %}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Upload Image File (from your computer)</label>
+                    {{ image_form.image }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">OR Enter Direct Cloud Image URL</label>
+                    {{ image_form.image_url }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Alt Description</label>
+                    {{ image_form.alt_text }}
+                </div>
+                <div class="flex items-center gap-2 pt-6">
+                    {{ image_form.is_primary }}
+                    <label for="{{ image_form.is_primary.id_for_label }}" class="text-xs font-bold text-slate-700 cursor-pointer">
+                        Set as primary display photo
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="px-6 py-2.5 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs shadow-md transition">
+                Add Image
+            </button>
+        </form>
+    </div>
+
+    <!-- Gallery Images Grid -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+            Gallery Photos ({{ product.images.count }})
+        </h2>
+
+        {% if product.images.exists %}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {% for img in product.images.all %}
+            <div class="relative group rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 flex flex-col items-center">
+                <div class="w-full h-36 flex items-center justify-center overflow-hidden mb-2">
+                    <img src="{{ img.get_url }}" alt="{{ img.alt_text }}" class="max-h-full max-w-full object-contain">
+                </div>
+                {% if img.is_primary %}
+                <span class="text-[10px] font-black text-zdroyal-700 bg-blue-100 px-2 py-0.5 rounded-full mb-1">
+                    Primary Image
+                </span>
+                {% endif %}
+                <form action="{% url 'portal:product_image_delete' img.id %}" method="POST" onsubmit="return confirm('Remove this image?');" class="w-full pt-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded transition text-center">
+                        Delete Photo
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-xs text-slate-400 py-4 text-center">No images uploaded for this product yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

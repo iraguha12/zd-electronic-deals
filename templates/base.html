@@ -1,0 +1,356 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_settings.company_name }} — {{ site_settings.slogan }}{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zdnavy: {
+                            800: '#11224D',
+                            900: '#0B1B3D',
+                            950: '#060F24'
+                        },
+                        zdroyal: {
+                            500: '#2563EB',
+                            600: '#1E56A0',
+                            700: '#15427D'
+                        },
+                        zdgold: {
+                            400: '#FBBF24',
+                            500: '#D4AF37',
+                            600: '#B89726'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom styling -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .badge-china {
+            background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%);
+            color: #9F1239;
+        }
+        .badge-kigali {
+            background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+            color: #166534;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="flex flex-col min-h-full text-slate-800 antialiased">
+
+    <!-- Top Announcement Bar (Editable by Owner) -->
+    {% if site_settings.show_announcement and site_settings.announcement_banner %}
+    <div class="bg-zdnavy-950 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium border-b border-zdnavy-800">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span class="mx-auto flex items-center gap-1.5">
+                <i data-lucide="sparkles" class="w-4 h-4 text-zdgold-400"></i>
+                {{ site_settings.announcement_banner }}
+            </span>
+            <div class="hidden md:flex items-center gap-4 text-xs text-slate-300">
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-zdgold-400"></i> Kigali, Rwanda & Shenzhen, China</span>
+                <span class="font-bold text-zdgold-400 bg-zdnavy-800 px-2 py-0.5 rounded">RWF</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Top Info Bar -->
+    <div class="bg-zdnavy-900 text-slate-300 text-xs py-1.5 px-4 hidden sm:block border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="tel:{{ site_settings.primary_phone }}" class="flex items-center gap-1.5 hover:text-white transition">
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5 text-zdgold-400"></i> {{ site_settings.primary_phone }}
+                </a>
+                <a href="mailto:{{ site_settings.email_contact }}" class="flex items-center gap-1.5 hover:text-white transition">
+                    <i data-lucide="mail" class="w-3.5 h-3.5 text-zdgold-400"></i> {{ site_settings.email_contact }}
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'pages:shipping' %}" class="hover:text-white transition">China-to-Rwanda Sourcing Guide</a>
+                <span class="text-slate-600">|</span>
+                <a href="{% url 'pages:faqs' %}" class="hover:text-white transition">Help & FAQs</a>
+                {% if user.is_authenticated and user.is_staff_member %}
+                <span class="text-slate-600">|</span>
+                <a href="{% url 'portal:dashboard' %}" class="text-zdgold-400 font-bold hover:underline flex items-center gap-1">
+                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Management Portal
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Brand Logo & Slogan -->
+                <a href="{% url 'pages:home' %}" class="flex flex-col group flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-xl bg-zdnavy-900 flex items-center justify-center text-zdgold-400 font-extrabold text-xl shadow-md border border-zdroyal-600 group-hover:scale-105 transition">
+                            Z&D
+                        </div>
+                        <div>
+                            <span class="text-xl sm:text-2xl font-black tracking-tight text-zdnavy-900 flex items-center gap-1">
+                                Z&D <span class="text-zdroyal-600">ELECTRONIC</span> <span class="text-zdgold-500 text-sm sm:text-base font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">DEALS</span>
+                            </span>
+                            <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wider block uppercase -mt-1">
+                                "BEFORE YOU BUY ELECTRONICS, ASK Z&D"
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Search Bar -->
+                <form action="{% url 'catalog:product_list' %}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-4">
+                    <div class="relative w-full">
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" 
+                               placeholder="Search smartphones, laptops, fast chargers, power banks, audio..." 
+                               class="w-full pl-10 pr-24 py-2.5 text-sm rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-zdroyal-600 focus:border-transparent bg-slate-50/50">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </div>
+                        <button type="submit" class="absolute inset-y-1 right-1 px-4 text-xs font-bold text-white bg-zdroyal-600 hover:bg-zdnavy-900 rounded-full transition flex items-center gap-1">
+                            Search
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Navigation Action Links -->
+                <div class="flex items-center gap-3 sm:gap-5">
+                    
+                    <!-- WhatsApp Direct Quote CTA -->
+                    <a href="https://wa.me/{{ site_settings.whatsapp_number }}?text=Hello%20Z%26D%20Electronic%20Deals!%20I%20want%20to%20inquire%20about%20electronics%20deals." 
+                       target="_blank" 
+                       class="hidden lg:flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition shadow-sm">
+                        <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+                        <span>WhatsApp Z&D</span>
+                    </a>
+
+                    <!-- User Account Dropdown / Link -->
+                    {% if user.is_authenticated %}
+                    <div class="relative flex items-center gap-2">
+                        <a href="{% url 'accounts:dashboard' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition text-sm font-semibold text-slate-700">
+                            <div class="w-8 h-8 rounded-full bg-zdroyal-600 text-white flex items-center justify-center font-bold text-xs">
+                                {{ user.first_name|default:user.email|slice:":1"|upper }}
+                            </div>
+                            <span class="hidden sm:inline">{{ user.first_name|default:"My Account" }}</span>
+                        </a>
+                        <a href="{% url 'accounts:logout' %}" title="Sign Out" class="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-zdnavy-900 hover:text-zdroyal-600 transition">
+                        <i data-lucide="user" class="w-4 h-4"></i>
+                        <span>Sign In</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Shopping Cart Button -->
+                    <a href="{% url 'orders:cart' %}" class="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 text-zdnavy-900"></i>
+                        {% if cart_count > 0 %}
+                        <span class="absolute -top-1.5 -right-1.5 bg-zdroyal-600 text-white font-extrabold text-[11px] w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="md:hidden pb-3">
+                <form action="{% url 'catalog:product_list' %}" method="GET" class="relative">
+                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" 
+                           placeholder="Search smartphones, laptops, chargers..." 
+                           class="w-full pl-9 pr-20 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-zdroyal-600 bg-slate-50">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <button type="submit" class="absolute inset-y-1 right-1 px-3 text-[11px] font-bold text-white bg-zdroyal-600 rounded-md">
+                        Search
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Category Navigation Strip -->
+        <div class="bg-slate-50 border-t border-slate-200 overflow-x-auto scrollbar-none py-2 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto flex items-center gap-2 sm:gap-4 text-xs font-semibold whitespace-nowrap">
+                <a href="{% url 'catalog:product_list' %}" class="px-3 py-1 rounded-full {% if not request.GET.category %}bg-zdnavy-900 text-white font-bold{% else %}text-slate-600 hover:text-zdnavy-900 hover:bg-slate-200/60{% endif %} transition">
+                    All Electronics
+                </a>
+                {% for cat in nav_categories %}
+                <a href="{% url 'catalog:product_list' %}?category={{ cat.slug }}" 
+                   class="px-3 py-1 rounded-full {% if request.GET.category == cat.slug %}bg-zdroyal-600 text-white font-bold{% else %}text-slate-600 hover:text-zdnavy-900 hover:bg-slate-200/60{% endif %} transition flex items-center gap-1.5">
+                    {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Alert Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+        {% for message in messages %}
+        <div class="p-4 mb-2 rounded-xl text-sm flex items-center justify-between shadow-sm {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border border-rose-200{% elif message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border border-amber-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+            <div class="flex items-center gap-2.5">
+                {% if message.tags == 'error' %}
+                <i data-lucide="alert-octagon" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
+                {% elif message.tags == 'success' %}
+                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
+                {% else %}
+                <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0"></i>
+                {% endif %}
+                <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Page Content Block -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Floating WhatsApp Action Button -->
+    <a href="https://wa.me/{{ site_settings.whatsapp_number }}?text=Hello%20Z%26D%20Electronic%20Deals!%20I%20have%20a%20question%20before%20I%20buy." 
+       target="_blank" 
+       title="Chat with Z&D on WhatsApp"
+       class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl hover:scale-105 transition duration-200 group">
+        <i data-lucide="message-circle" class="w-6 h-6 text-white"></i>
+        <span class="text-xs font-extrabold pr-1 hidden sm:inline">Ask Z&D on WhatsApp</span>
+    </a>
+
+    <!-- Footer -->
+    <footer class="bg-zdnavy-900 text-slate-300 pt-14 pb-8 border-t border-zdnavy-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-slate-800">
+                
+                <!-- Company info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-9 h-9 rounded-lg bg-zdroyal-600 flex items-center justify-center text-zdgold-400 font-extrabold text-lg">
+                            Z&D
+                        </div>
+                        <span class="text-xl font-black text-white tracking-tight">Z&D ELECTRONIC DEALS</span>
+                    </div>
+                    <p class="text-xs text-zdgold-400 font-bold uppercase tracking-wider mb-3">
+                        "BEFORE YOU BUY ELECTRONICS, ASK Z&D"
+                    </p>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                        Direct-from-China electronic sourcing company delivering smartphones, laptops, fast chargers, power banks, and accessories directly to Rwanda and worldwide.
+                    </p>
+                    <div class="flex flex-col gap-2 text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-zdgold-400"></i> {{ site_settings.physical_address }}</span>
+                        <span class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-zdgold-400"></i> {{ site_settings.primary_phone }}</span>
+                        <span class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-zdgold-400"></i> {{ site_settings.email_contact }}</span>
+                    </div>
+                </div>
+
+                <!-- Products & Categories -->
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-l-2 border-zdgold-500 pl-2">
+                        Product Categories
+                    </h3>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="{% url 'catalog:product_list' %}?category=smartphones" class="hover:text-white transition">Smartphones</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=laptops-computers" class="hover:text-white transition">Laptops & Computers</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=chargers-adapters" class="hover:text-white transition">Fast Chargers & GaN Adapters</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=power-banks" class="hover:text-white transition">Power Banks & Portable Power</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=headphones-audio" class="hover:text-white transition">Headphones & Earbuds</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=smartwatches-wearables" class="hover:text-white transition">Smartwatches</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=phone-accessories" class="hover:text-white transition">Cases & Screen Protectors</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}?category=computer-accessories" class="hover:text-white transition">Computer Hubs & SSDs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Sourcing & Customer Care -->
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-l-2 border-zdroyal-600 pl-2">
+                        Sourcing & Support
+                    </h3>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="{% url 'pages:shipping' %}" class="hover:text-white transition">China-to-Rwanda Delivery Timeline</a></li>
+                        <li><a href="{% url 'pages:returns' %}" class="hover:text-white transition">Warranty & Return Policies</a></li>
+                        <li><a href="{% url 'pages:faqs' %}" class="hover:text-white transition">Frequently Asked Questions</a></li>
+                        <li><a href="{% url 'pages:about' %}" class="hover:text-white transition">About Z&D Electronic Deals</a></li>
+                        <li><a href="{% url 'pages:contact' %}" class="hover:text-white transition">Direct Customer Contact</a></li>
+                        <li><a href="{% url 'accounts:dashboard' %}" class="hover:text-white transition">Customer Account & Order Tracking</a></li>
+                    </ul>
+                </div>
+
+                <!-- Trust & Payment Methods -->
+                <div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-l-2 border-emerald-500 pl-2">
+                        Security & Trust
+                    </h3>
+                    <div class="space-y-3 text-xs text-slate-400">
+                        <div class="flex items-start gap-2.5">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+                            <span><strong>Multi-Point Inspection</strong>: Every phone and laptop is physically tested in China before shipment.</span>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i data-lucide="lock" class="w-5 h-5 text-zdgold-400 flex-shrink-0 mt-0.5"></i>
+                            <span><strong>Strict Account Privacy</strong>: Your customer information and order records are completely isolated.</span>
+                        </div>
+                        <div class="pt-2">
+                            <span class="block text-[11px] font-bold text-slate-300 uppercase mb-2">Accepted Payment Methods:</span>
+                            <div class="flex flex-wrap gap-1.5 text-[10px] font-bold text-slate-300">
+                                <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">MTN MoMo</span>
+                                <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">Airtel Money</span>
+                                <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">Cash on Delivery (Kigali)</span>
+                                <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">Bank Transfer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom bar -->
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+                <p>© {% now "Y" %} {{ site_settings.company_name }}. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'pages:privacy' %}" class="hover:text-white transition">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="{% url 'pages:terms' %}" class="hover:text-white transition">Terms & Conditions</a>
+                    <span>•</span>
+                    <a href="{% url 'portal:dashboard' %}" class="text-slate-400 hover:text-zdgold-400 transition">Portal Login</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

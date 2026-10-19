@@ -1,0 +1,49 @@
+{% extends 'portal/base_portal.html' %}
+
+{% block title %}Security & Activity Audit Logs | Z&D Management Portal{% endblock %}
+
+{% block portal_content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">Security & Operational Audit Logs</h1>
+        <p class="text-xs text-slate-500 mt-1">Immutable record of price modifications, role assignments, and status updates.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-3.5">Timestamp</th>
+                    <th class="px-6 py-3.5">User</th>
+                    <th class="px-6 py-3.5">Action Code</th>
+                    <th class="px-6 py-3.5">Activity Details</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+                {% for log in logs %}
+                <tr class="hover:bg-slate-50/60 transition">
+                    <td class="px-6 py-3.5 text-slate-500 font-mono whitespace-nowrap">
+                        {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                    </td>
+                    <td class="px-6 py-3.5 font-bold text-slate-900">
+                        {{ log.user.email|default:"System" }}
+                    </td>
+                    <td class="px-6 py-3.5">
+                        <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                            {{ log.action }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3.5 text-slate-600">
+                        {{ log.details }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-slate-400">No audit events logged yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

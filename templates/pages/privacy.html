@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy & Account Isolation | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            Data Protection & Privacy
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-2">
+            Customer Privacy & Account Isolation
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+            Our strict commitments to customer data privacy, complete account isolation, and secure handling.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-8">
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-6">
+        
+        <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start gap-3">
+            <i data-lucide="shield-check" class="w-5 h-5 text-zdroyal-600 flex-shrink-0 mt-0.5"></i>
+            <div>
+                <strong class="font-bold block text-sm mb-1 text-zdnavy-900">Architectural Customer Isolation:</strong>
+                Our software architecture enforces that Customer A can never access Customer B's order records, addresses, phone numbers, or profile information, even if URL parameters or request IDs are intentionally altered.
+            </div>
+        </div>
+
+        <div class="prose prose-sm text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {{ site_settings.privacy_policy }}
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 space-y-3 text-xs text-slate-600">
+            <h3 class="font-bold text-sm text-zdnavy-900">What Information We Collect:</h3>
+            <ul class="list-disc pl-5 space-y-1">
+                <li>Account identification: Your name and email address.</li>
+                <li>Delivery logistics: Phone number, delivery address in Rwanda, and rider landmarks.</li>
+                <li>Order history: Ordered items, quantities, and chosen payment method.</li>
+            </ul>
+
+            <h3 class="font-bold text-sm text-zdnavy-900 pt-2">What We Never Do:</h3>
+            <ul class="list-disc pl-5 space-y-1">
+                <li>We NEVER sell, trade, or share customer contact records with third-party advertisers.</li>
+                <li>We NEVER store raw bank card numbers on our servers.</li>
+                <li>We NEVER expose customer order details in public search results or API listings.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

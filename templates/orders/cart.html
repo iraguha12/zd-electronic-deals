@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Shopping Cart | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-2xl sm:text-3xl font-black text-zdnavy-900 tracking-tight mb-2">Shopping Cart</h1>
+    <p class="text-xs sm:text-sm text-slate-500 mb-8">Review your selected electronics devices before ordering or requesting a quotation.</p>
+
+    {% if cart_items %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Cart Items List (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="divide-y divide-slate-200">
+                    {% for item in cart_items %}
+                    <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        
+                        <!-- Thumbnail & Title -->
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200 flex items-center justify-center">
+                                <img src="{{ item.product.primary_image.get_url }}" 
+                                     alt="{{ item.product.name }}" 
+                                     class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-zdroyal-600 uppercase">
+                                    {{ item.product.category.name|default:"Electronics" }}
+                                </span>
+                                <h3 class="text-sm font-bold text-slate-900 line-clamp-1">
+                                    <a href="{% url 'catalog:product_detail' item.product.slug %}" class="hover:text-zdroyal-600">{{ item.product.name }}</a>
+                                </h3>
+                                <span class="text-xs text-slate-400 font-mono block">SKU: {{ item.product.sku }}</span>
+                                <span class="text-xs font-black text-zdnavy-900 block mt-1">
+                                    {{ item.product.selling_price|floatformat:0|intcomma }} RWF each
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Quantity & Line Total -->
+                        <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                            
+                            <!-- Quantity form -->
+                            <form action="{% url 'orders:cart_update' item.product.id %}" method="POST" class="flex items-center border border-slate-300 rounded-lg overflow-hidden bg-white">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="50" onchange="this.form.submit()" class="w-14 text-center text-xs font-bold py-1.5 border-0 focus:ring-0">
+                            </form>
+
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block font-medium">Subtotal</span>
+                                <span class="text-sm font-extrabold text-zdnavy-900 whitespace-nowrap">
+                                    {{ item.line_total|floatformat:0|intcomma }} RWF
+                                </span>
+                            </div>
+
+                            <!-- Delete item form -->
+                            <form action="{% url 'orders:cart_update' item.product.id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="remove">
+                                <button type="submit" title="Remove item" class="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+                    <a href="{% url 'catalog:product_list' %}" class="text-xs font-bold text-zdroyal-600 hover:underline flex items-center gap-1">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Continue Shopping
+                    </a>
+                    <a href="{% url 'orders:cart_clear' %}" class="text-xs font-semibold text-rose-600 hover:underline">
+                        Clear Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <h3 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+                    Order Summary
+                </h3>
+
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center justify-between text-slate-600">
+                        <span>Items Subtotal:</span>
+                        <span class="font-bold text-slate-900">{{ subtotal|floatformat:0|intcomma }} RWF</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-600">
+                        <span>Standard Kigali Delivery:</span>
+                        <span class="font-bold text-slate-900">{{ standard_shipping|floatformat:0|intcomma }} RWF</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-600">
+                        <span>Upcountry Delivery:</span>
+                        <span class="font-bold text-slate-900">{{ upcountry_shipping|floatformat:0|intcomma }} RWF</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-200 flex items-baseline justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-zdnavy-900 block">Estimated Total</span>
+                        <span class="text-[10px] text-slate-400">Final delivery fee calculated at checkout</span>
+                    </div>
+                    <span class="text-xl font-black text-zdnavy-900">
+                        {{ subtotal|floatformat:0|intcomma }} <span class="text-xs text-zdroyal-600">RWF</span>
+                    </span>
+                </div>
+
+                <a href="{% url 'orders:checkout' %}" class="w-full py-3.5 px-4 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-sm text-center block shadow-md transition">
+                    Proceed to Checkout
+                </a>
+
+                <div class="pt-3 text-[11px] text-slate-500 space-y-1.5 border-t border-slate-100">
+                    <div class="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Strict Customer Isolation & Privacy
+                    </div>
+                    <div class="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Pay on Delivery or Mobile Money in Kigali
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% else %}
+    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-sm">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+        </div>
+        <h2 class="text-lg font-bold text-slate-900 mb-1">Your Shopping Cart is Empty</h2>
+        <p class="text-xs text-slate-500 mb-6">
+            Explore our curated inventory of smartphones, fast chargers, laptops, and accessories sourced directly from China.
+        </p>
+        <a href="{% url 'catalog:product_list' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs transition">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

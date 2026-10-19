@@ -1,0 +1,108 @@
+{% extends 'portal/base_portal.html' %}
+{% load humanize %}
+
+{% block title %}Products & Inventory | Z&D Management Portal{% endblock %}
+
+{% block portal_content %}
+<div class="space-y-6">
+    
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">Products & Inventory Management</h1>
+            <p class="text-xs text-slate-500 mt-1">Manage device prices in RWF, stock quantities, and China sourcing badges.</p>
+        </div>
+        <a href="{% url 'portal:product_create' %}" class="px-4 py-2.5 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add New Product
+        </a>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <form method="GET" class="flex flex-1 items-center gap-3 w-full">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by name, model, or SKU..." class="w-full sm:w-80 px-3.5 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-zdroyal-600">
+            <select name="category" onchange="this.form.submit()" class="px-3.5 py-2 text-xs rounded-lg border border-slate-300 bg-white">
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="px-4 py-2 bg-zdnavy-900 text-white rounded-lg text-xs font-bold hover:bg-zdroyal-600 transition">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <!-- Products Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="px-5 py-3">Product</th>
+                        <th class="px-5 py-3">SKU</th>
+                        <th class="px-5 py-3">Category</th>
+                        <th class="px-5 py-3">Selling Price (RWF)</th>
+                        {% if user.is_owner %}
+                        <th class="px-5 py-3 text-amber-700">Cost (RWF)</th>
+                        <th class="px-5 py-3 text-emerald-700">Est. Profit</th>
+                        {% endif %}
+                        <th class="px-5 py-3">Stock</th>
+                        <th class="px-5 py-3">Origin</th>
+                        <th class="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium">
+                    {% for p in products %}
+                    <tr class="hover:bg-slate-50/60 transition">
+                        <td class="px-5 py-3.5 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                <img src="{{ p.primary_image.get_url }}" alt="{{ p.name }}" class="w-full h-full object-contain">
+                            </div>
+                            <span class="font-bold text-slate-900 line-clamp-1 max-w-xs">{{ p.name }}</span>
+                        </td>
+                        <td class="px-5 py-3.5 font-mono text-slate-500">{{ p.sku }}</td>
+                        <td class="px-5 py-3.5 text-slate-600">{{ p.category.name|default:"-" }}</td>
+                        <td class="px-5 py-3.5 font-extrabold text-zdnavy-900">{{ p.selling_price|floatformat:0|intcomma }} RWF</td>
+                        {% if user.is_owner %}
+                        <td class="px-5 py-3.5 font-mono text-amber-800">{{ p.cost_price|floatformat:0|intcomma }} RWF</td>
+                        <td class="px-5 py-3.5 font-bold text-emerald-700">+{{ p.estimated_profit|floatformat:0|intcomma }} RWF ({{ p.profit_margin_percent }}%)</td>
+                        {% endif %}
+                        <td class="px-5 py-3.5">
+                            {% if p.is_low_stock %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800">
+                                {{ p.stock_quantity }} (Low)
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
+                                {{ p.stock_quantity }} units
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3.5">
+                            {% if p.in_stock_in_rwanda %}
+                            <span class="text-[10px] font-bold text-emerald-700">🇷🇼 Kigali</span>
+                            {% else %}
+                            <span class="text-[10px] font-bold text-rose-700">🇨🇳 China</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3.5 text-right space-x-2">
+                            <a href="{% url 'portal:product_detail' p.id %}" class="font-bold text-zdroyal-600 hover:underline">
+                                Images
+                            </a>
+                            <a href="{% url 'portal:product_edit' p.id %}" class="font-bold text-zdnavy-900 hover:underline">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="px-5 py-8 text-center text-slate-400">No products found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

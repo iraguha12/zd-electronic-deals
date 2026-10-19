@@ -1,0 +1,151 @@
+{% extends 'portal/base_portal.html' %}
+
+{% block title %}Website & Company Settings | Z&D Management Portal{% endblock %}
+
+{% block portal_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <div>
+        <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+            <a href="{% url 'portal:dashboard' %}" class="hover:text-zdroyal-600">Portal</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <span class="text-slate-900 font-bold">Website & Business Settings</span>
+        </nav>
+        <h1 class="text-2xl sm:text-3xl font-black text-zdnavy-900 tracking-tight">
+            Owner Website & Content Management
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">
+            Edit your company branding, contact numbers, WhatsApp link, announcement banner, shipping fees in RWF, and policies without editing code.
+        </p>
+    </div>
+
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Branding & Core Identity -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="building" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>1. Company Branding & Slogan</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Company Name</label>
+                    {{ form.company_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Main Slogan</label>
+                    {{ form.slogan }}
+                </div>
+            </div>
+
+            <!-- Top Announcement Banner -->
+            <div class="pt-2">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Top Announcement Banner Text</label>
+                {{ form.announcement_banner }}
+                <div class="flex items-center gap-2 mt-2">
+                    {{ form.show_announcement }}
+                    <label for="{{ form.show_announcement.id_for_label }}" class="text-xs font-bold text-slate-700 cursor-pointer">
+                        Display Announcement Banner on Top of Website
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact & Communications -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="phone" class="w-4 h-4 text-emerald-600"></i>
+                <span>2. WhatsApp & Contact Channels</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Direct Number *</label>
+                    {{ form.whatsapp_number }}
+                    <span class="text-[10px] text-slate-400 block mt-1">Country code + number (e.g. 250788123456)</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Primary Office Phone</label>
+                    {{ form.primary_phone }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Official Email Address</label>
+                    {{ form.email_contact }}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Physical Location & China Hub Address</label>
+                {{ form.physical_address }}
+            </div>
+        </div>
+
+        <!-- Shipping & Delivery Rates (in RWF) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="truck" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>3. Delivery Fees in Rwandan Francs (RWF)</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Standard Kigali Express Fee (RWF)</label>
+                    {{ form.standard_kigali_shipping_rwf }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Upcountry Rwanda Fee (RWF)</label>
+                    {{ form.upcountry_shipping_rwf }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Editable Policies & Static Pages Content -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>4. Website Copy & Customer Policies</span>
+            </h2>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">About Company Story & Mission</label>
+                {{ form.about_company }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">China-to-Rwanda Sourcing & Shipping Guide</label>
+                {{ form.shipping_guide }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Warranty, Returns & Defect Guarantee</label>
+                {{ form.return_policy }}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Privacy & Isolation Statement</label>
+                    {{ form.privacy_policy }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Terms of Service</label>
+                    {{ form.terms_conditions }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <a href="{% url 'portal:dashboard' %}" class="px-6 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
+                Cancel
+            </a>
+            <button type="submit" class="px-8 py-3.5 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-extrabold text-xs shadow-lg transition flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-zdgold-400"></i>
+                <span>Save All Website Changes</span>
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

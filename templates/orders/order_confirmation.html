@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Order Confirmed: {{ order.order_number }} | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
+    
+    <!-- Success Icon -->
+    <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6 shadow-inner animate-bounce">
+        <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+    </div>
+
+    <span class="text-xs font-bold text-zdroyal-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+        Order Successfully Received
+    </span>
+
+    <h1 class="text-3xl sm:text-4xl font-black text-zdnavy-900 tracking-tight mt-3 mb-2">
+        Thank You for Your Order!
+    </h1>
+    
+    <p class="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto mb-6">
+        Your order reference is <span class="font-extrabold text-zdnavy-900 font-mono text-sm sm:text-base bg-slate-100 px-2 py-0.5 rounded border border-slate-300">{{ order.order_number }}</span>. Our team in Kigali and Shenzhen has received your request.
+    </p>
+
+    <!-- WhatsApp One-Click Action Card -->
+    <div class="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-xl text-left mb-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-bold text-emerald-200 uppercase tracking-wider block">Recommended Fast Track</span>
+                <h3 class="text-lg font-black mt-0.5">Confirm Instantly via WhatsApp</h3>
+                <p class="text-xs text-emerald-100 mt-1 max-w-md">
+                    Click below to open WhatsApp with your pre-formatted order summary. Our team will verify delivery timing and answer any questions immediately.
+                </p>
+            </div>
+            <a href="{{ whatsapp_url }}" 
+               target="_blank" 
+               class="px-6 py-3.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-900 font-black text-xs sm:text-sm shadow-md transition flex items-center gap-2 flex-shrink-0">
+                <i data-lucide="message-circle" class="w-5 h-5 text-emerald-600"></i>
+                <span>Open WhatsApp Now</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Order Summary Details Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-left space-y-6">
+        
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+                <span class="text-xs text-slate-400 block">Status:</span>
+                <span class="text-xs font-black px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-slate-400 block">Order Date:</span>
+                <span class="text-xs font-semibold text-slate-700">{{ order.created_at|date:"F j, Y, g:i a" }}</span>
+            </div>
+        </div>
+
+        <!-- Recipient & Delivery Snapshot -->
+        <div>
+            <h4 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider mb-2">Delivery Destination</h4>
+            <div class="p-3.5 rounded-xl bg-slate-50 text-xs text-slate-700 space-y-1">
+                <p><strong>Recipient:</strong> {{ order.recipient_name }}</p>
+                <p><strong>Contact Phone:</strong> {{ order.phone_primary }} {% if order.phone_backup %}(Backup: {{ order.phone_backup }}){% endif %}</p>
+                <p><strong>Address:</strong> {{ order.delivery_address }}, {{ order.city_district }}, {{ order.country }}</p>
+                {% if order.delivery_notes %}
+                <p><strong>Instructions:</strong> {{ order.delivery_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Ordered Items -->
+        <div>
+            <h4 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider mb-2">Items Breakdown</h4>
+            <div class="divide-y divide-slate-100 text-xs">
+                {% for item in order.items.all %}
+                <div class="py-2.5 flex items-center justify-between">
+                    <div>
+                        <span class="font-bold text-slate-900">{{ item.quantity }}x {{ item.product_name }}</span>
+                        {% if item.product_sku %}
+                        <span class="text-[10px] text-slate-400 font-mono block">SKU: {{ item.product_sku }}</span>
+                        {% endif %}
+                    </div>
+                    <span class="font-extrabold text-slate-800">{{ item.total_price|floatformat:0|intcomma }} RWF</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Financial Totals -->
+        <div class="pt-3 border-t border-slate-200 space-y-1.5 text-xs text-right">
+            <div class="flex justify-between text-slate-600">
+                <span>Subtotal:</span>
+                <span class="font-bold text-slate-800">{{ order.subtotal|floatformat:0|intcomma }} RWF</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+                <span>Delivery Fee:</span>
+                <span class="font-bold text-slate-800">{{ order.shipping_fee|floatformat:0|intcomma }} RWF</span>
+            </div>
+            <div class="flex justify-between text-sm font-black text-zdnavy-900 pt-2 border-t border-slate-100">
+                <span>Total Amount:</span>
+                <span>{{ order.total_amount|floatformat:0|intcomma }} RWF</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+                Payment Method: <span class="font-bold">{{ order.get_payment_method_display }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+        <a href="{% url 'accounts:order_detail' order.order_number %}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-zdnavy-900 hover:bg-slate-800 text-white font-bold text-xs transition">
+            View in Customer Dashboard
+        </a>
+        <a href="{% url 'catalog:product_list' %}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition">
+            Continue Shopping
+        </a>
+    </div>
+
+</div>
+{% endblock %}

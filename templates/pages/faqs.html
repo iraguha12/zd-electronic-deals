@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Frequently Asked Questions | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-zdgold-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            Customer Help Center
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-2">
+            Frequently Asked Questions
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+            Everything you need to know about our direct China electronics sourcing pipeline, delivery to Rwanda, and warranties.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-6">
+    
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>1. What is the meaning of "BEFORE YOU BUY ELECTRONICS, ASK Z&D"?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            In Rwanda, consumers often overpay for electronics or receive refurbished devices disguised as new. By contacting Z&D first, we give you transparent factory pricing directly from vetted electronics suppliers in Shenzhen and Guangzhou, China.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>2. Are prices on the website in Rwandan Francs (RWF)?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            Yes. All product listings and shipping estimates on our website are explicitly displayed in Rwandan Francs (RWF). There are no hidden foreign exchange conversion surprises.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>3. How long does shipping from China take to Rwanda?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            For items currently in our <strong>Kigali Stock</strong>, delivery takes 2 to 24 hours. For <strong>Direct China Factory Orders</strong>, items are inspected in Shenzhen within 24–48 hours and arrive in Kigali via express air cargo within 7 to 12 business days.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>4. How do I pay for my order?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            We currently support WhatsApp direct order confirmation, MTN Mobile Money, Airtel Money, and Cash on Delivery for customers in Kigali. You inspect your device physically before final handover.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>5. How does Z&D guarantee the quality of devices?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            Every smartphone, laptop, charger, and power bank undergoes our multi-point pre-dispatch inspection at our Shenzhen hub: screen touch matrix verification, battery health check, authentic IMEI validation, and high-wattage charging test.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-2">
+        <h2 class="text-sm font-bold text-zdnavy-900 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-zdroyal-600"></i>
+            <span>6. Is my personal customer information private and isolated?</span>
+        </h2>
+        <p class="text-xs text-slate-600 leading-relaxed pl-6">
+            Absolutely. Our system enforces strict database-level and server-side customer isolation. No other customer can ever see your orders, phone numbers, delivery addresses, or personal records.
+        </p>
+    </div>
+
+    <div class="text-center pt-8">
+        <p class="text-xs text-slate-500 mb-3">Still have an unanswered question?</p>
+        <a href="https://wa.me/{{ site_settings.whatsapp_number }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Message Z&D on WhatsApp
+        </a>
+    </div>
+
+</div>
+{% endblock %}

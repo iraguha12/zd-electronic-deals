@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Saved Delivery Addresses | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <nav class="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+                <a href="{% url 'accounts:dashboard' %}" class="hover:text-zdroyal-600">My Account</a>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                <span class="text-slate-900 font-bold">Addresses</span>
+            </nav>
+            <h1 class="text-2xl sm:text-3xl font-black text-zdnavy-900 tracking-tight">Delivery Addresses</h1>
+            <p class="text-xs text-slate-500 mt-1">Manage your home, office, and pickup locations across Rwanda.</p>
+        </div>
+        <a href="{% url 'accounts:address_add' %}" class="px-4 py-2.5 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add New Address
+        </a>
+    </div>
+
+    {% if addresses %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for addr in addresses %}
+        <div class="bg-white rounded-2xl border {% if addr.is_default %}border-zdroyal-600 shadow-md ring-1 ring-zdroyal-600{% else %}border-slate-200 shadow-sm{% endif %} p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-sm text-zdnavy-900">{{ addr.full_name }}</span>
+                    {% if addr.is_default %}
+                    <span class="px-2 py-0.5 rounded-full bg-blue-100 text-zdroyal-700 text-[10px] font-black">
+                        Default Delivery
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="text-xs text-slate-600 space-y-1 mb-4">
+                    <p class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i> {{ addr.phone_number }}</p>
+                    <p class="flex items-start gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5"></i> {{ addr.street_address }}</p>
+                    <p class="pl-5 text-slate-500">{{ addr.city_district }}, {{ addr.province }}, {{ addr.country }}</p>
+                    {% if addr.delivery_instructions %}
+                    <p class="pl-5 text-[11px] text-amber-700 font-medium">Note: {{ addr.delivery_instructions }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                <a href="{% url 'accounts:address_edit' addr.id %}" class="font-bold text-zdroyal-600 hover:underline">
+                    Edit Address
+                </a>
+                <form action="{% url 'accounts:address_delete' addr.id %}" method="POST" onsubmit="return confirm('Delete this address?');">
+                    {% csrf_token %}
+                    <button type="submit" class="text-rose-600 hover:underline font-semibold">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="map-pin" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 mb-1">No Saved Delivery Addresses</h3>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto mb-6">
+            Save your delivery location in Kigali or upcountry to speed up checkout.
+        </p>
+        <a href="{% url 'accounts:address_add' %}" class="px-5 py-2.5 rounded-xl bg-zdroyal-600 text-white text-xs font-bold inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add First Address
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

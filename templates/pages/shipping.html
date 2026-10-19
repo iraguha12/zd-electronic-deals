@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}China-to-Rwanda Shipping Guide | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-zdgold-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            Logistics & Delivery Information
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-2">
+            China to Rwanda Sourcing & Shipping Guide
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+            Transparent shipping timelines, customs handling, and local delivery in Kigali and across Rwanda.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-8">
+    
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <h2 class="text-lg font-bold text-zdnavy-900 tracking-tight">Our Direct Shipping Architecture</h2>
+        <div class="prose prose-sm text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {{ site_settings.shipping_guide }}
+        </div>
+    </div>
+
+    <!-- Logistics Comparison Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                    🇷🇼 Kigali Warehouse Stock
+                </span>
+                <span class="text-xs font-mono text-slate-400">Immediate</span>
+            </div>
+            <h3 class="font-bold text-base text-zdnavy-900">Same-Day / Next-Day Delivery</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Products labeled "In Kigali Stock" are already cleared through customs and stored in our Kigali facility. Available for immediate pickup or dispatch within 2 to 24 hours.
+            </p>
+            <div class="pt-2 text-xs font-bold text-zdnavy-900">
+                Delivery Fee: {{ site_settings.standard_kigali_shipping_rwf|floatformat:0 }} RWF (Kigali)
+            </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded-full">
+                    🇨🇳 Direct China Factory Order
+                </span>
+                <span class="text-xs font-mono text-slate-400">7 to 12 Days</span>
+            </div>
+            <h3 class="font-bold text-base text-zdnavy-900">Express Air Cargo Direct</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Orders sourced directly from manufacturer production lines in Shenzhen or Guangzhou. Tested at our dispatch hub and flown via scheduled air cargo directly into Kigali.
+            </p>
+            <div class="pt-2 text-xs font-bold text-zdnavy-900">
+                Landed price covers international airfreight & import handling.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

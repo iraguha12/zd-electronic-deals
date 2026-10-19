@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms & Conditions | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-zdgold-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            Terms of Service
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-2">
+            Terms & Conditions
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+            Agreement governing electronics procurement, orders, and fulfillment with Z&D Electronic Deals.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-6">
+        <div class="prose prose-sm text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {{ site_settings.terms_conditions }}
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 space-y-3 text-xs text-slate-600">
+            <h3 class="font-bold text-sm text-zdnavy-900">Key Commercial Terms:</h3>
+            <ul class="list-disc pl-5 space-y-1.5">
+                <li><strong>Quotation Validity:</strong> Factory prices in China may fluctuate according to market supply. Quotations given are locked upon confirmation.</li>
+                <li><strong>Inspection on Delivery:</strong> Customers in Kigali are requested to physically inspect the packaging and hardware integrity before handing over final payment.</li>
+                <li><strong>Custom China Sourcing:</strong> Devices procured specifically under a custom buyer request cannot be cancelled once cargo transit from Shenzhen has commenced.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Returns & Warranty Policy | {{ site_settings.company_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-zdnavy-950 via-zdnavy-900 to-zdroyal-800 text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-bold text-zdgold-400 uppercase tracking-widest bg-zdnavy-800 px-3 py-1 rounded-full border border-slate-700">
+            Customer Protection
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-2">
+            Warranty, Returns & Defect Policy
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+            Our commitment to original hardware, verified performance, and customer peace of mind in Rwanda.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-6">
+        <div class="prose prose-sm text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {{ site_settings.return_policy }}
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 space-y-4">
+            <h3 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider">How to Claim Warranty Service:</h3>
+            <ol class="list-decimal pl-5 space-y-2 text-xs text-slate-600">
+                <li>Keep your original Z&D order reference number (e.g. ZD-2026-XXXX).</li>
+                <li>Report the observed hardware issue within 7 days of delivery via WhatsApp or our contact page.</li>
+                <li>Bring the device to our Kigali service center or hand it to our authorized technician for inspection.</li>
+                <li>If verified as a manufacturer defect, we provide immediate replacement or repair under warranty.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

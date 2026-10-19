@@ -1,0 +1,93 @@
+{% extends 'portal/base_portal.html' %}
+{% load humanize %}
+
+{% block title %}Manage Customer Orders | Z&D Management Portal{% endblock %}
+
+{% block portal_content %}
+<div class="space-y-6">
+    
+    <div>
+        <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">Customer Orders & Fulfillment</h1>
+        <p class="text-xs text-slate-500 mt-1">Manage order statuses across China sourcing, transit, and Kigali dispatch.</p>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <form method="GET" class="flex flex-1 items-center gap-3 w-full">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by order #, customer name, phone, or email..." class="w-full sm:w-80 px-3.5 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-zdroyal-600">
+            
+            <select name="status" onchange="this.form.submit()" class="px-3.5 py-2 text-xs rounded-lg border border-slate-300 bg-white">
+                <option value="">All Statuses</option>
+                {% for code, label in status_choices %}
+                <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="px-4 py-2 bg-zdnavy-900 text-white rounded-lg text-xs font-bold hover:bg-zdroyal-600 transition">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="px-5 py-3">Order Number</th>
+                        <th class="px-5 py-3">Customer & Contact</th>
+                        <th class="px-5 py-3">Date</th>
+                        <th class="px-5 py-3">Delivery City</th>
+                        <th class="px-5 py-3">Items</th>
+                        <th class="px-5 py-3">Total Amount</th>
+                        <th class="px-5 py-3">Status</th>
+                        <th class="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium">
+                    {% for order in orders %}
+                    <tr class="hover:bg-slate-50/60 transition">
+                        <td class="px-5 py-3.5 font-bold font-mono text-zdnavy-900">
+                            {{ order.order_number }}
+                        </td>
+                        <td class="px-5 py-3.5 text-slate-700">
+                            <strong>{{ order.recipient_name }}</strong>
+                            <span class="text-[10px] text-slate-500 block font-mono">{{ order.phone_primary }}</span>
+                            <span class="text-[10px] text-slate-400 block truncate max-w-xs">{{ order.customer.email }}</span>
+                        </td>
+                        <td class="px-5 py-3.5 text-slate-500">
+                            {{ order.created_at|date:"M j, Y, g:i a" }}
+                        </td>
+                        <td class="px-5 py-3.5 text-slate-700">
+                            {{ order.city_district }}
+                        </td>
+                        <td class="px-5 py-3.5 font-bold text-zdroyal-600">
+                            {{ order.total_items_count }} item{{ order.total_items_count|pluralize }}
+                        </td>
+                        <td class="px-5 py-3.5 font-black text-zdnavy-900">
+                            {{ order.total_amount|floatformat:0|intcomma }} RWF
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black {% if order.status == 'DELIVERED' %}bg-emerald-100 text-emerald-800{% elif order.status == 'CANCELLED' %}bg-rose-100 text-rose-800{% elif order.status == 'PENDING' %}bg-amber-100 text-amber-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                            <a href="{% url 'portal:order_detail' order.order_number %}" class="px-3 py-1.5 rounded-lg bg-zdnavy-900 text-white font-bold text-xs hover:bg-zdroyal-600 transition">
+                                Manage
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-5 py-8 text-center text-slate-400">No orders matching your criteria.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
