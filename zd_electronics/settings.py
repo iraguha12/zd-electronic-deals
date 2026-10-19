@@ -13,15 +13,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-aj*j*n%d=(o43l-(xxos$pj9^tlw)#b&q9fms#pmh3(m#xwqcv')
 
 # Debug is True for local development; switch to False in production
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', '*']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.trycloudflare.com',
+    'https://*.onrender.com',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
