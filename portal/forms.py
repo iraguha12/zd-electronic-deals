@@ -6,6 +6,22 @@ from accounts.models import CustomUser
 
 
 class ProductForm(forms.ModelForm):
+    primary_photo = forms.ImageField(
+        required=False,
+        label="Product Photo (upload from your computer/phone)",
+        widget=forms.FileInput(attrs={
+            'class': 'w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-zdroyal-50 file:text-zdroyal-700 hover:file:bg-zdroyal-100',
+            'accept': 'image/*'
+        })
+    )
+    image_url = forms.URLField(
+        required=False,
+        label="OR Direct Cloud Image Link",
+        widget=forms.URLInput(attrs={
+            'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm',
+            'placeholder': 'https://example.com/image.jpg'
+        })
+    )
     specs_text = forms.CharField(
         widget=forms.Textarea(attrs={
             'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono',
@@ -21,29 +37,38 @@ class ProductForm(forms.ModelForm):
         fields = [
             'name', 'category', 'sku', 'selling_price', 'cost_price',
             'stock_quantity', 'low_stock_threshold', 'short_description', 'description',
+            'video_file', 'video_url',
             'is_sourced_from_china', 'in_stock_in_rwanda', 'requires_quote',
             'is_featured', 'is_new_arrival', 'is_published',
             'warranty_info', 'estimated_delivery_days'
         ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
+            'name': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'e.g. iPhone 15 Pro Max'}),
             'category': forms.Select(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
-            'sku': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'e.g. ZD-IP15-256'}),
+            'sku': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'Optional (leave blank to auto-generate)'}),
             'selling_price': forms.NumberInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'Price in RWF'}),
             'cost_price': forms.NumberInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'Cost in RWF (Owner Only)'}),
             'stock_quantity': forms.NumberInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
             'low_stock_threshold': forms.NumberInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
-            'short_description': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
-            'description': forms.Textarea(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'rows': 4}),
+            'short_description': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'Brief 1-sentence summary'}),
+            'description': forms.Textarea(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'rows': 4, 'placeholder': 'Full details, condition, inbox items'}),
+            'video_file': forms.FileInput(attrs={'class': 'w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100', 'accept': 'video/mp4,video/webm,video/quicktime'}),
+            'video_url': forms.URLInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm', 'placeholder': 'https://www.youtube.com/watch?v=... or video link'}),
             'warranty_info': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
             'estimated_delivery_days': forms.TextInput(attrs={'class': 'w-full px-3 py-2 rounded-lg border border-slate-300 text-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk and self.instance.specifications:
-            lines = [f"{k}: {v}" for k, v in self.instance.specifications.items()]
-            self.fields['specs_text'].initial = "\n".join(lines)
+        self.fields['sku'].required = False
+        self.fields['category'].required = False
+        if self.instance and self.instance.pk:
+            if self.instance.specifications:
+                lines = [f"{k}: {v}" for k, v in self.instance.specifications.items()]
+                self.fields['specs_text'].initial = "\n".join(lines)
+            primary_img = self.instance.images.filter(is_primary=True).first()
+            if primary_img and primary_img.image_url:
+                self.fields['image_url'].initial = primary_img.image_url
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -57,6 +82,24 @@ class ProductForm(forms.ModelForm):
         instance.specifications = specs
         if commit:
             instance.save()
+            photo = self.cleaned_data.get('primary_photo')
+            img_url = self.cleaned_data.get('image_url')
+            if photo or img_url:
+                primary = instance.images.filter(is_primary=True).first()
+                if primary:
+                    if photo:
+                        primary.image = photo
+                    if img_url:
+                        primary.image_url = img_url
+                    primary.save()
+                else:
+                    ProductImage.objects.create(
+                        product=instance,
+                        image=photo,
+                        image_url=img_url,
+                        is_primary=True,
+                        alt_text=instance.name
+                    )
         return instance
 
 

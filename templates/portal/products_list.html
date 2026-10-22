@@ -56,7 +56,10 @@
                     <tr class="hover:bg-slate-50/60 transition">
                         <td class="px-5 py-3.5 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                <img src="{{ p.primary_image.get_url }}" alt="{{ p.name }}" class="w-full h-full object-contain">
+                                <img src="{{ p.primary_image.get_url }}" 
+                                     alt="{{ p.name }}" 
+                                     onerror="this.onerror=null; this.src='/static/images/placeholder-product.svg';"
+                                     class="w-full h-full object-contain">
                             </div>
                             <span class="font-bold text-slate-900 line-clamp-1 max-w-xs">{{ p.name }}</span>
                         </td>

@@ -16,12 +16,21 @@
         <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">{{ title }}</h1>
     </div>
 
-    <form method="POST" class="space-y-6">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
 
+        {% if form.errors %}
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 space-y-1">
+            <p class="font-bold">Please correct the following errors:</p>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <!-- 1. Basic Details -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100">
-                1. Basic Details
+            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="tag" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>1. Basic Details</span>
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -35,15 +44,9 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">SKU / Model Number *</label>
-                    {{ form.sku }}
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Short Description (for cards)</label>
-                    {{ form.short_description }}
-                </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Short Description (for product cards & search)</label>
+                {{ form.short_description }}
             </div>
 
             <div>
@@ -52,9 +55,80 @@
             </div>
         </div>
 
+        <!-- 2. Product Photo & Video (Upload Directly) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="image" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>2. Product Photo & Video (Upload Directly)</span>
+            </h2>
+
+            <!-- Photo Upload Area -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <label class="block text-xs font-bold text-zdnavy-900 flex items-center gap-1.5">
+                    <i data-lucide="camera" class="w-4 h-4 text-zdroyal-600"></i>
+                    <span>Product Photo</span>
+                </label>
+
+                {% if product and product.primary_image %}
+                <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-200">
+                    <img src="{{ product.primary_image.get_url }}" alt="Current photo" class="w-14 h-14 object-contain rounded border border-slate-100">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-700 block">Current Photo Active</span>
+                        <span class="text-slate-400 text-[11px]">Choose a new file below if you wish to replace it.</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-[11px] font-semibold text-slate-600 mb-1">Choose Photo File (from phone or PC):</span>
+                        {{ form.primary_photo }}
+                    </div>
+                    <div>
+                        <span class="block text-[11px] font-semibold text-slate-600 mb-1">OR Paste Image Web Link:</span>
+                        {{ form.image_url }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Upload Area -->
+            <div class="p-4 rounded-xl bg-purple-50/60 border border-purple-200 space-y-3">
+                <label class="block text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                    <i data-lucide="video" class="w-4 h-4 text-purple-600"></i>
+                    <span>Product Video (Unboxing, Testing, Condition Demo)</span>
+                </label>
+
+                {% if product and product.has_video %}
+                <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-purple-200">
+                    <i data-lucide="play-circle" class="w-8 h-8 text-purple-600 flex-shrink-0"></i>
+                    <div class="text-xs">
+                        <span class="font-bold text-purple-900 block">Video Attached</span>
+                        <span class="text-slate-500 text-[11px] truncate max-w-xs block">{{ product.get_video_url }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-[11px] font-semibold text-slate-600 mb-1">Upload Video File (.mp4, .mov, .webm):</span>
+                        {{ form.video_file }}
+                    </div>
+                    <div>
+                        <span class="block text-[11px] font-semibold text-slate-600 mb-1">OR Video Link (YouTube / TikTok / Cloud):</span>
+                        {{ form.video_url }}
+                    </div>
+                </div>
+                <p class="text-[11px] text-purple-700">
+                    💡 Customers love watching short video inspections showing the device screen, battery health, and body condition.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3. Pricing & Financials (RWF) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100">
-                2. Pricing & Financials (Currency: Rwandan Francs RWF)
+            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>3. Pricing & Financials (Currency: Rwandan Francs RWF)</span>
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -69,7 +143,7 @@
                         Procurement & Freight Cost in RWF (Owner Only)
                     </label>
                     {{ form.cost_price }}
-                    <span class="text-[10px] text-slate-400 block mt-1">Used to compute profit margin</span>
+                    <span class="text-[10px] text-slate-400 block mt-1">Used to compute confidential profit margin</span>
                 </div>
                 {% else %}
                 <div class="hidden">
@@ -90,9 +164,11 @@
             </div>
         </div>
 
+        <!-- 4. Technical Specifications & Sourcing Origin -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100">
-                3. Technical Specifications & Sourcing Origin
+            <h2 class="text-xs font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-zdroyal-600"></i>
+                <span>4. Technical Specifications & Sourcing Origin</span>
             </h2>
 
             <div>
@@ -140,8 +216,9 @@
             <a href="{% url 'portal:products_list' %}" class="px-6 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
                 Cancel
             </a>
-            <button type="submit" class="px-8 py-3 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs shadow-md transition">
-                Save Product
+            <button type="submit" class="px-8 py-3.5 rounded-xl bg-zdroyal-600 hover:bg-zdnavy-900 text-white font-bold text-xs shadow-lg transition flex items-center gap-2">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Save Product</span>
             </button>
         </div>
 

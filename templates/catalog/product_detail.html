@@ -29,6 +29,7 @@
                 <img id="mainProductImage" 
                      src="{{ product.primary_image.get_url }}" 
                      alt="{{ product.name }}" 
+                     onerror="this.onerror=null; this.src='/static/images/placeholder-product.svg';"
                      class="max-h-full max-w-full object-contain">
                 
                 <div class="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -51,9 +52,42 @@
                 <button type="button" 
                         onclick="document.getElementById('mainProductImage').src = '{{ img.get_url }}'" 
                         class="w-16 h-16 rounded-xl bg-white border border-slate-200 hover:border-zdroyal-600 p-1 flex-shrink-0 transition">
-                    <img src="{{ img.get_url }}" alt="{{ img.alt_text }}" class="w-full h-full object-contain">
+                    <img src="{{ img.get_url }}" 
+                         alt="{{ img.alt_text|default:product.name }}" 
+                         onerror="this.onerror=null; this.src='/static/images/placeholder-product.svg';"
+                         class="w-full h-full object-contain">
                 </button>
                 {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Product Video Player (if available) -->
+            {% if product.has_video %}
+            <div class="rounded-2xl border border-purple-200 bg-purple-50/50 p-4 space-y-3">
+                <div class="flex items-center gap-2 text-xs font-black text-purple-900 uppercase tracking-wider">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-purple-600"></i>
+                    <span>Product Video Inspection</span>
+                </div>
+                <div class="rounded-xl overflow-hidden bg-black shadow-md">
+                    {% if product.video_file %}
+                    <video controls class="w-full max-h-72 mx-auto" poster="{{ product.primary_image.get_url }}">
+                        <source src="{{ product.video_file.url }}">
+                        Your browser does not support HTML video.
+                    </video>
+                    {% elif product.is_youtube_video %}
+                    <div class="aspect-video w-full">
+                        <iframe src="{{ product.youtube_embed_url }}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    {% elif product.video_url %}
+                    <video controls class="w-full max-h-72 mx-auto">
+                        <source src="{{ product.video_url }}">
+                        Your browser does not support HTML video.
+                    </video>
+                    {% endif %}
+                </div>
+                <p class="text-[11px] text-purple-800 leading-tight">
+                    Watch actual testing and build quality before placing your order.
+                </p>
             </div>
             {% endif %}
 

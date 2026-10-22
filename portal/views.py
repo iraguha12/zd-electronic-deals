@@ -95,9 +95,9 @@ def portal_products_list_view(request):
 
 @manager_required
 def portal_product_create_view(request):
-    """Add a new product to catalogue."""
+    """Add a new product to catalogue with direct photo and video upload."""
     if request.method == 'POST':
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
             log_activity(request.user, "PRODUCT_CREATED", f"Created product {product.name} ({product.sku})")
@@ -111,10 +111,10 @@ def portal_product_create_view(request):
 
 @manager_required
 def portal_product_edit_view(request, product_id):
-    """Edit existing product details, prices, specifications, and stock."""
+    """Edit existing product details, prices, specifications, photo, video, and stock."""
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             product = form.save()
             log_activity(request.user, "PRODUCT_UPDATED", f"Updated product {product.name} ({product.sku})")

@@ -1,7 +1,7 @@
 {% extends 'portal/base_portal.html' %}
 {% load humanize %}
 
-{% block title %}{{ product.name }} | Image & Gallery Management{% endblock %}
+{% block title %}{{ product.name }} | Image & Media Management{% endblock %}
 
 {% block portal_content %}
 <div class="max-w-4xl mx-auto space-y-6">
@@ -16,16 +16,19 @@
         </nav>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-black text-zdnavy-900 tracking-tight">{{ product.name }}</h1>
-            <a href="{% url 'portal:product_edit' product.id %}" class="px-4 py-2 rounded-xl bg-zdnavy-900 text-white font-bold text-xs hover:bg-zdroyal-600 transition">
-                Edit Product
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{% url 'portal:product_edit' product.id %}" class="px-4 py-2 rounded-xl bg-zdnavy-900 text-white font-bold text-xs hover:bg-zdroyal-600 transition flex items-center gap-1.5">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                    <span>Edit Product & Media</span>
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Product Summary Card -->
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between text-xs">
         <div>
-            <span class="text-slate-400 block">SKU / Model</span>
+            <span class="text-slate-400 block">System SKU</span>
             <span class="font-bold font-mono text-slate-800">{{ product.sku }}</span>
         </div>
         <div>
@@ -42,18 +45,62 @@
         </div>
     </div>
 
-    <!-- Upload Image Form -->
+    <!-- Product Video Showcase -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <h2 class="text-sm font-bold text-purple-900 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="video" class="w-4 h-4 text-purple-600"></i>
+                <span>Product Video (Testing / Inspection)</span>
+            </h2>
+            <a href="{% url 'portal:product_edit' product.id %}" class="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1">
+                <i data-lucide="upload" class="w-3 h-3"></i>
+                <span>{% if product.has_video %}Change Video{% else %}Upload Video{% endif %}</span>
+            </a>
+        </div>
+
+        {% if product.has_video %}
+        <div class="rounded-xl overflow-hidden bg-black max-w-xl mx-auto shadow-md">
+            {% if product.video_file %}
+            <video controls class="w-full max-h-80 mx-auto" poster="{{ product.primary_image.get_url }}">
+                <source src="{{ product.video_file.url }}">
+                Your browser does not support HTML video.
+            </video>
+            {% elif product.is_youtube_video %}
+            <div class="aspect-video w-full">
+                <iframe src="{{ product.youtube_embed_url }}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            </div>
+            {% elif product.video_url %}
+            <video controls class="w-full max-h-80 mx-auto">
+                <source src="{{ product.video_url }}">
+                Your browser does not support HTML video.
+            </video>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="p-6 rounded-xl border border-dashed border-purple-200 bg-purple-50/40 text-center">
+            <i data-lucide="video-off" class="w-8 h-8 text-purple-400 mx-auto mb-2"></i>
+            <p class="text-xs font-semibold text-purple-900">No video added for this product yet.</p>
+            <p class="text-[11px] text-slate-500 mt-1">You can upload an unboxing or hardware testing video anytime.</p>
+            <a href="{% url 'portal:product_edit' product.id %}" class="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow transition">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span>Add Video Now</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Upload Extra Photos Form -->
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-sm font-bold text-zdnavy-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
             <i data-lucide="image-plus" class="w-4 h-4 text-zdroyal-600"></i>
-            <span>Add Product Photo</span>
+            <span>Add Additional Gallery Photos</span>
         </h2>
 
         <form action="{% url 'portal:product_image_add' product.id %}" method="POST" enctype="multipart/form-data" class="space-y-4">
             {% csrf_token %}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Upload Image File (from your computer)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Upload Image File (from computer or phone)</label>
                     {{ image_form.image }}
                 </div>
                 <div>
@@ -91,8 +138,11 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {% for img in product.images.all %}
             <div class="relative group rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 flex flex-col items-center">
-                <div class="w-full h-36 flex items-center justify-center overflow-hidden mb-2">
-                    <img src="{{ img.get_url }}" alt="{{ img.alt_text }}" class="max-h-full max-w-full object-contain">
+                <div class="w-full h-36 flex items-center justify-center overflow-hidden mb-2 bg-white rounded-lg border border-slate-100">
+                    <img src="{{ img.get_url }}" 
+                         alt="{{ img.alt_text|default:product.name }}" 
+                         onerror="this.onerror=null; this.src='/static/images/placeholder-product.svg';"
+                         class="max-h-full max-w-full object-contain">
                 </div>
                 {% if img.is_primary %}
                 <span class="text-[10px] font-black text-zdroyal-700 bg-blue-100 px-2 py-0.5 rounded-full mb-1">

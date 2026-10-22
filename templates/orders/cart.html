@@ -23,6 +23,7 @@
                             <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200 flex items-center justify-center">
                                 <img src="{{ item.product.primary_image.get_url }}" 
                                      alt="{{ item.product.name }}" 
+                                     onerror="this.onerror=null; this.src='/static/images/placeholder-product.svg';"
                                      class="w-full h-full object-contain">
                             </div>
                             <div>
